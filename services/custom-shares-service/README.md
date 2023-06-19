@@ -1,4 +1,4 @@
-# aps-custom-shares-service
+# custom-shares-service
 
 Experimental Node.js web application built with [Autodesk Platform Services](https://aps.autodesk.com), used for time-unlimited, secure sharing of designs in APS-based products such as [Autodesk Construction Cloud](https://construction.autodesk.com).
 

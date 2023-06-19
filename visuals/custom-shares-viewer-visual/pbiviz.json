@@ -1,8 +1,8 @@
 {
     "visual": {
-        "name": "aps-custom-shares-viewer",
+        "name": "custom-shares-viewer-visual",
         "displayName": "APS Custom Shares Viewer",
-        "guid": "viewer2B4CD19C0B1B42BB81D496ECDE1C1321",
+        "guid": "custom_shares_viewer_visual_a4f2990a03324cf79eb44f982719df44",
         "visualClassName": "Visual",
         "version": "1.0.0",
         "description": "Visual for displaying shared 2D/3D designs from Autodesk Platform Services.",

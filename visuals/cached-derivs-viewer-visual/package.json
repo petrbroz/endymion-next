@@ -1,5 +1,5 @@
 {
-  "name": "aps-custom-shares-viewer",
+  "name": "cached-derivs-viewer-visual",
   "description": "default_template_value",
   "repository": {
     "type": "default_template_value",
@@ -13,7 +13,7 @@
     "lint": "tslint -c tslint.json -p tsconfig.json"
   },
   "dependencies": {
-    "powerbi-visuals-api": "5.1.0",
+    "powerbi-visuals-api": "~5.1.0",
     "powerbi-visuals-utils-formattingmodel": "5.0.0"
   },
   "devDependencies": {

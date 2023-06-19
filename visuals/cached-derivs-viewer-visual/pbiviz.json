@@ -1,0 +1,24 @@
+{
+    "visual": {
+        "name": "cached-derivs-viewer-visual",
+        "displayName": "APS Cached Derivatives Viewer",
+        "guid": "cached_derivs_viewer_visual_a1a5092a2ce44fb78ae125e6c9dcee85",
+        "visualClassName": "Visual",
+        "version": "1.0.0",
+        "description": "Visual for displaying shared 2D/3D designs from Autodesk Platform Services.",
+        "supportUrl": "https://github.com/petrbroz/endymion-next",
+        "gitHubUrl": "https://github.com/petrbroz/endymion-next"
+    },
+    "apiVersion": "5.1.0",
+    "author": {
+        "name": "Petr Broz",
+        "email": "petr.broz@autodesk.com"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}
