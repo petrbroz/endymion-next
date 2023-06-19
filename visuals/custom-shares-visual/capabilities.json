@@ -1,0 +1,65 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Model Properties",
+            "name": "properties",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Config",
+            "name": "config",
+            "kind": "Measure"
+        }
+    ],
+    "objects": {
+        "design": {
+            "properties": {
+                "shareUrl": {
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
+        }
+    },
+    "dataViewMappings": [
+        {
+            "categorical": {
+                "categories": {
+                    "for": {
+                        "in": "properties"
+                    },
+                    "dataReductionAlgorithm": {
+                        "top": {
+                            "count": 30000
+                        }
+                    }
+                },
+                "values": {
+                    "select": [
+                        {
+                            "bind": {
+                                "to": "config"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "privileges": [
+        {
+            "name": "WebAccess",
+            "essential": true,
+            "parameters": [
+                "https://aps-custom-shares.fly.dev",
+                "https://*.autodesk.com",
+                "https://cdn.derivative.autodesk.com"
+            ]
+        }
+    ],
+    "supportsMultiVisualSelection": true,
+    "suppressDefaultTitle": true,
+    "supportsLandingPage": true,
+    "supportsEmptyDataView": true
+}

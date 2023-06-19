@@ -1,0 +1,24 @@
+{
+    "visual": {
+        "name": "aps-custom-shares-viewer",
+        "displayName": "APS Custom Shares Viewer",
+        "guid": "viewer2B4CD19C0B1B42BB81D496ECDE1C1321",
+        "visualClassName": "Visual",
+        "version": "1.0.0",
+        "description": "Visual for displaying shared 2D/3D designs from Autodesk Platform Services.",
+        "supportUrl": "https://github.com/petrbroz/endymion-next",
+        "gitHubUrl": "https://github.com/petrbroz/endymion-next"
+    },
+    "apiVersion": "5.1.0",
+    "author": {
+        "name": "Petr Broz",
+        "email": "petr.broz@autodesk.com"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}
