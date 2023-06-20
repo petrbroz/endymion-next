@@ -48,7 +48,7 @@ jobs:
           node-version: 18
       - name: Install dependencies
         working-directory: ./visuals/custom-shares-viewer-visual
-        run: npm ci
+        run: npm ci && npm install -g powerbi-visuals-tools
       - name: Build
         working-directory: ./visuals/custom-shares-viewer-visual
         run: npm run package
@@ -63,7 +63,7 @@ jobs:
           node-version: 18
       - name: Install dependencies
         working-directory: ./visuals/cached-derivs-viewer-visual
-        run: npm ci
+        run: npm ci && npm install -g powerbi-visuals-tools
       - name: Build
         working-directory: ./visuals/cached-derivs-viewer-visual
         run: npm run package
