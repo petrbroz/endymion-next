@@ -108,7 +108,11 @@ async function listObjects(prefix) {
 async function getObject(objectKey) {
     await ensureBucketExists(APS_STORAGE_BUCKET);
     const resp = await new APS.ObjectsApi().downloadResources(APS_STORAGE_BUCKET, [{ objectKey, responseType: 'json' }], null, null, await getInternalToken());
-    return resp[0].data;
+    if (resp[0].error) {
+        throw new Error(resp[0].downloadParams.body);
+    } else {
+        return resp[0].data;
+    }
 }
 
 async function putObject(objectKey, data) {
