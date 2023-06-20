@@ -3,3 +3,5 @@ dist
 .tmp
 .env
 *.log
+webpack.statistics.dev.html
+webpack.statistics.prod.html
