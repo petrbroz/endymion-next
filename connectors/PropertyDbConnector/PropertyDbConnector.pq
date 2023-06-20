@@ -1,4 +1,4 @@
-[Version = "0.0.2"]
+[Version = "0.0.3"]
 section PropertyDbConnector;
 
 [DataSource.Kind="PropertyDbConnector", Publish="PropertyDbConnector.Publish"]
