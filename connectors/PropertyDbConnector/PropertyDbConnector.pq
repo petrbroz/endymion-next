@@ -1,4 +1,4 @@
-[Version = "1.0.0"]
+[Version = "0.0.1"]
 section PropertyDbConnector;
 
 [DataSource.Kind="PropertyDbConnector", Publish="PropertyDbConnector.Publish"]
@@ -37,7 +37,7 @@ PropertyDbConnector.Publish = [
     Beta = true,
     Category = "Other",
     ButtonText = { Extension.LoadString("ButtonTitle"), Extension.LoadString("ButtonHelp") },
-    LearnMoreUrl = "https://aps.autodesk.com",
+    LearnMoreUrl = "https://github.com/petrbroz/endymion-next",
     SourceImage = PropertyDbConnector.Icons,
     SourceTypeImage = PropertyDbConnector.Icons
 ];
