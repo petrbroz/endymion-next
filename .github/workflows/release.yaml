@@ -83,10 +83,19 @@ jobs:
           name: cached-derivs-viewer-visual
           path: ./visuals/cached-derivs-viewer-visual/dist/*.pbiviz
   create-release:
+    name: Create New Release
     runs-on: ubuntu-latest
     needs: [CustomSharesConnector, PropertyDbConnector, custom-shares-viewer-visual, cached-derivs-viewer-visual]
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
-      - name: Display structure of downloaded files
-        run: ls -R
+      - name: Create Release
+        uses: Roang-zero1/github-create-release-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Artifacts
+        uses: Roang-zero1/github-upload-release-artifacts-action@v2
+        with:
+          args: "CustomSharesConnector/ PropertyDbConnector/ cached-derivs-viewer-visual/ custom-shares-viewer-visual/"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
