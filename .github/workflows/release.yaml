@@ -84,6 +84,8 @@ jobs:
           path: ./visuals/cached-derivs-viewer-visual/dist/*.pbiviz
   create-release:
     name: Create New Release
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     needs: [CustomSharesConnector, PropertyDbConnector, custom-shares-viewer-visual, cached-derivs-viewer-visual]
     steps:
