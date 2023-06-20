@@ -2,15 +2,13 @@
 
 on:
   push:
-    branches:    
-      - master
-    tags-ignore:
+    tags:
       - 'v*'
 
-name: Run Test Builds
+name: Create Release
 
 jobs:
-  custom-shares-connector:
+  CustomSharesConnector:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -22,7 +20,12 @@ jobs:
       - name: Build
         working-directory: ./connectors/CustomSharesConnector
         run: dotnet build
-  property-db-connector:
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: CustomSharesConnector
+          path: ./connectors/CustomSharesConnector/bin/AnyCPU/Debug/CustomSharesConnector.mez
+  PropertyDbConnector:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -34,6 +37,11 @@ jobs:
       - name: Build
         working-directory: ./connectors/PropertyDbConnector
         run: dotnet build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: PropertyDbConnector
+          path: ./connectors/PropertyDbConnector/bin/AnyCPU/Debug/PropertyDbConnector.mez
   custom-shares-viewer-visual:
     runs-on: ubuntu-latest
     steps:
@@ -49,6 +57,11 @@ jobs:
       - name: Build
         working-directory: ./visuals/custom-shares-viewer-visual
         run: npm run package
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: custom-shares-viewer-visual
+          path: ./visuals/custom-shares-viewer-visual/dist/*.pbiviz
   cached-derivs-viewer-visual:
     runs-on: ubuntu-latest
     steps:
@@ -64,3 +77,16 @@ jobs:
       - name: Build
         working-directory: ./visuals/cached-derivs-viewer-visual
         run: npm run package
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cached-derivs-viewer-visual
+          path: ./visuals/cached-derivs-viewer-visual/dist/*.pbiviz
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [CustomSharesConnector, PropertyDbConnector, custom-shares-viewer-visual, cached-derivs-viewer-visual]
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+      - name: Display structure of downloaded files
+        run: ls -R
