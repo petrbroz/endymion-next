@@ -94,11 +94,11 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
       - name: Create Release
-        uses: Roang-zero1/github-create-release-action@v2
+        uses: Roang-zero1/github-create-release-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Release Artifacts
-        uses: Roang-zero1/github-upload-release-artifacts-action@v2
+        uses: Roang-zero1/github-upload-release-artifacts-action@v3
         with:
           args: "CustomSharesConnector/ PropertyDbConnector/ cached-derivs-viewer-visual/ custom-shares-viewer-visual/"
         env:
