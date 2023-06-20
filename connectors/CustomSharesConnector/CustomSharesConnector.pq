@@ -1,4 +1,4 @@
-[Version = "0.0.3"]
+[Version = "0.0.4"]
 section CustomSharesConnector;
 
 [DataSource.Kind="CustomSharesConnector", Publish="CustomSharesConnector.Publish"]
