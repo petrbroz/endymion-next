@@ -53,7 +53,8 @@
             "essential": true,
             "parameters": [
                 "https://*.autodesk.com",
-                "https://cdn.derivative.autodesk.com"
+                "https://cdn.derivative.autodesk.com",
+                "https://*.amazonaws.com/"
             ]
         }
     ],
