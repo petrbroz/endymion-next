@@ -15,7 +15,7 @@ app.post('/token', express.json(), async function (req, res) {
     const { personal_access_token } = req.body;
     try {
         const response = await axios.post(
-            'https://developer-dev.api.autodesk.com/authentication/v2/token',
+            'https://developer.api.autodesk.com/authentication/v2/token',
             new URLSearchParams({
                 'grant_type': 'urn:ietf:params:oauth:grant-type:token-exchange',
                 'subject_token': personal_access_token,
@@ -30,7 +30,7 @@ app.post('/token', express.json(), async function (req, res) {
         res.json(response.data);
     } catch (err) {
         console.error(err);
-        res.status(400).end(err.response.data);
+        res.status(400).json(err.response.data);
     }
 });
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));
