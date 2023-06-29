@@ -69,7 +69,7 @@ CustomSharesConnector.GetProperties = (urn as text, guid as text, region as text
             if region = "US" then "modelderivative/v2"
             else if region = "EMEA" then "modelderivative/v2/regions/eu"
             else error "Unsuported region.",
-        url = "https://developer.api.autodesk.com/" & base_path & "/designdata/" & urn & "/metadata/" & guid & "/properties",
+        url = "https://developer.api.autodesk.com/" & base_path & "/designdata/" & urn & "/metadata/" & guid & "/properties?forceget=true",
         response = Web.Contents(url, [ Headers = [ #"Accept" = "application/json", #"Authorization" = "Bearer " & accessToken ] ]),
         json = Json.Document(response),
         data = json[data],
