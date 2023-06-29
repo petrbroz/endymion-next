@@ -7,10 +7,11 @@ shared CustomSharesConnector.Contents = (shareUrl as text) =>
         share = CustomSharesConnector.GetShare(shareUrl),
         urn = share[URN],
         accessToken = share[AccessToken],
-        views = CustomSharesConnector.GetViews(urn, accessToken),
+        region = share[Region],
+        views = CustomSharesConnector.GetViews(urn, region, accessToken),
         firstView = List.First(views),
         guid = firstView[guid],
-        properties = CustomSharesConnector.GetProperties(urn, guid, accessToken)
+        properties = CustomSharesConnector.GetProperties(urn, guid, region, accessToken)
     in
         properties;
 
@@ -39,28 +40,36 @@ CustomSharesConnector.GetShare = (shareUrl as text) =>
         response = Web.Contents(shareUrl, [ Headers = [ #"Accept" = "application/json" ] ]),
         json = Json.Document(response),
         urn = json[urn],
+        region = try json[region] otherwise "US",
         credentials = json[credentials],
         access_token = credentials[access_token]
     in
         [
             AccessToken = access_token,
-            URN = urn
+            URN = urn,
+            Region = region
         ];
 
-CustomSharesConnector.GetViews = (urn as text, accessToken as text) =>
+CustomSharesConnector.GetViews = (urn as text, region as text, accessToken as text) =>
     let
-        // TODO: support different geos
-        url = "https://developer.api.autodesk.com/modelderivative/v2/designdata/" & urn & "/metadata",
+        base_path =
+            if region = "US" then "modelderivative/v2"
+            else if region = "EMEA" then "modelderivative/v2/regions/eu"
+            else error "Unsuported region.",
+        url = "https://developer.api.autodesk.com/" & base_path & "/designdata/" & urn & "/metadata",
         response = Web.Contents(url, [ Headers = [ #"Accept" = "application/json", #"Authorization" = "Bearer " & accessToken ] ]),
         json = Json.Document(response),
         data = json[data]
     in
         data[metadata];
 
-CustomSharesConnector.GetProperties = (urn as text, guid as text, accessToken as text) =>
+CustomSharesConnector.GetProperties = (urn as text, guid as text, region as text, accessToken as text) =>
     let
-        // TODO: support different geos
-        url = "https://developer.api.autodesk.com/modelderivative/v2/designdata/" & urn & "/metadata/" & guid & "/properties",
+        base_path =
+            if region = "US" then "modelderivative/v2"
+            else if region = "EMEA" then "modelderivative/v2/regions/eu"
+            else error "Unsuported region.",
+        url = "https://developer.api.autodesk.com/" & base_path & "/designdata/" & urn & "/metadata/" & guid & "/properties",
         response = Web.Contents(url, [ Headers = [ #"Accept" = "application/json", #"Authorization" = "Bearer " & accessToken ] ]),
         json = Json.Document(response),
         data = json[data],
