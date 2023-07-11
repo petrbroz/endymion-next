@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.0.5
+
+- Added `forceget` parameter when requesting Model Derivative properties
+- Initial support for regions in CustomSharesConnector (not implemented by the server-side yet)
+
 ## v0.0.4
 
 Really close to an actual release.

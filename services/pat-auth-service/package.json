@@ -1,6 +1,6 @@
 {
   "name": "pat-auth-service",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "description": "Simple app for authenticed access to Autodesk Platform Services based on Personal Access Tokens.",
   "main": "index.js",
   "scripts": {

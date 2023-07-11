@@ -1,6 +1,6 @@
 {
   "name": "custom-shares-service",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "Simple server application for managing long-term shares of content in Autodesk Platform Services.",
   "main": "server.js",
   "scripts": {
