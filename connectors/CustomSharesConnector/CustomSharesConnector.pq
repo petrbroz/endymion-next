@@ -37,7 +37,11 @@ CustomSharesConnector.Icons = [
 
 CustomSharesConnector.GetShare = (shareUrl as text) =>
     let
-        response = Web.Contents(shareUrl, [ Headers = [ #"Accept" = "application/json" ] ]),
+        response = Web.Contents(shareUrl, [
+            Headers = [
+                #"Accept" = "application/json"
+            ]
+        ]),
         json = Json.Document(response),
         urn = json[urn],
         region = try json[region] otherwise "US",
@@ -57,7 +61,12 @@ CustomSharesConnector.GetViews = (urn as text, region as text, accessToken as te
             else if region = "EMEA" then "modelderivative/v2/regions/eu"
             else error "Unsuported region.",
         url = "https://developer.api.autodesk.com/" & base_path & "/designdata/" & urn & "/metadata",
-        response = Web.Contents(url, [ Headers = [ #"Accept" = "application/json", #"Authorization" = "Bearer " & accessToken ] ]),
+        response = Web.Contents(url, [
+            Headers = [
+                #"Accept" = "application/json",
+                #"Authorization" = "Bearer " & accessToken
+            ]
+        ]),
         json = Json.Document(response),
         data = json[data]
     in
@@ -70,8 +79,15 @@ CustomSharesConnector.GetProperties = (urn as text, guid as text, region as text
             else if region = "EMEA" then "modelderivative/v2/regions/eu"
             else error "Unsuported region.",
         url = "https://developer.api.autodesk.com/" & base_path & "/designdata/" & urn & "/metadata/" & guid & "/properties?forceget=true",
-        response = Web.Contents(url, [ Headers = [ #"Accept" = "application/json", #"Authorization" = "Bearer " & accessToken ] ]),
-        json = Json.Document(response),
+        response = Web.Contents(url, [
+            Headers = [
+                #"Accept" = "application/json",
+                #"Authorization" = "Bearer " & accessToken
+            ],
+            ManualStatusHandling = { 202 }
+        ]),
+        metadata = Value.Metadata(response),
+        json = if metadata[Response.Status] = 202 then error "Request is being processed. Please try again later." else Json.Document(response),
         data = json[data],
         properties = Table.FromRecords(data[collection])
     in
