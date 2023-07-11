@@ -1,14 +1,9 @@
 {
     "dataRoles": [
         {
-            "displayName": "Model Properties",
-            "name": "properties",
+            "displayName": "Object IDs",
+            "name": "dbids",
             "kind": "Grouping"
-        },
-        {
-            "displayName": "Config",
-            "name": "config",
-            "kind": "Measure"
         }
     ],
     "objects": {
@@ -24,25 +19,9 @@
     },
     "dataViewMappings": [
         {
-            "categorical": {
-                "categories": {
-                    "for": {
-                        "in": "properties"
-                    },
-                    "dataReductionAlgorithm": {
-                        "top": {
-                            "count": 30000
-                        }
-                    }
-                },
-                "values": {
-                    "select": [
-                        {
-                            "bind": {
-                                "to": "config"
-                            }
-                        }
-                    ]
+            "table": {
+                "rows": {
+                    "for": { "in": "dbids" }
                 }
             }
         }

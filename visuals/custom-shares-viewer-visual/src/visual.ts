@@ -32,10 +32,10 @@ export class Visual implements IVisual {
             this.updateViewer();
         }
         if (this.viewer && options.dataViews.length > 0) {
-            const categories = options.dataViews[0]?.categorical?.categories;
-            if (categories && categories.length > 0) {
+            const rows = options.dataViews[0]?.table?.rows;
+            if (rows && rows.length > 0) {
                 //@ts-ignore
-                const dbids = categories[0].values.map(e => parseInt(e));
+                const dbids = rows[0].map(e => parseInt(e));
                 this.viewer.isolate(dbids);
                 this.viewer.fitToView(dbids);
             }
