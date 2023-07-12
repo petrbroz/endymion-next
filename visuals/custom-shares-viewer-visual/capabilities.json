@@ -1,8 +1,8 @@
 {
     "dataRoles": [
         {
-            "displayName": "Object IDs",
-            "name": "dbids",
+            "displayName": "External ID",
+            "name": "externalIds",
             "kind": "Grouping"
         }
     ],
@@ -21,7 +21,7 @@
         {
             "table": {
                 "rows": {
-                    "for": { "in": "dbids" }
+                    "for": { "in": "externalIds" }
                 }
             }
         }

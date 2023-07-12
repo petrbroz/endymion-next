@@ -34,6 +34,12 @@ export function loadModel(viewer: Autodesk.Viewing.Viewer3D, urn: string, guid?:
     });
 }
 
+export function getExternalIdMap(model: Autodesk.Viewing.Model): Promise<{ [externalId: string]: number; }> {
+    return new Promise(function (resolve, reject) {
+        model.getExternalIdMapping(resolve, reject);
+    });
+}
+
 function loadScript(src: string): Promise<void> {
     return new Promise((resolve, reject) => {
         const el = document.createElement("script");

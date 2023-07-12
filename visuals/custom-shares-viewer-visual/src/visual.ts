@@ -10,12 +10,14 @@ import IVisual = powerbi.extensibility.visual.IVisual;
 
 import { VisualFormattingSettingsModel } from './settings';
 
-import { initializeViewerRuntime, loadModel } from './viewer.utils';
+import { initializeViewerRuntime, loadModel, getExternalIdMap } from './viewer.utils';
 import { getShare } from './shares.utils';
 
 export class Visual implements IVisual {
     private container: HTMLElement;
-    private viewer: Autodesk.Viewing.GuiViewer3D;
+    private viewer: Autodesk.Viewing.GuiViewer3D = null;
+    private model: Autodesk.Viewing.Model = null;
+    private externalIdsMap: { [externalId: string]: number } = null;
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
     private shareUrl: string = '';
@@ -31,11 +33,11 @@ export class Visual implements IVisual {
             this.shareUrl = this.formattingSettings.card.shareUrl.value;
             this.updateViewer();
         }
-        if (this.viewer && options.dataViews.length > 0) {
-            const rows = options.dataViews[0]?.table?.rows;
-            if (rows && rows.length > 0) {
+        if (this.viewer && this.externalIdsMap && options.dataViews.length > 0) {
+            const externalIds = options.dataViews[0]?.table?.rows;
+            if (externalIds?.length > 0) {
                 //@ts-ignore
-                const dbids = rows[0].map(e => parseInt(e));
+                const dbids = externalIds.map(e => this.externalIdsMap[e[0]]);
                 this.viewer.isolate(dbids);
                 this.viewer.fitToView(dbids);
             }
@@ -43,32 +45,41 @@ export class Visual implements IVisual {
     }
 
     private async updateViewer(): Promise<void> {
+        // One time initialization of the viewer runtime and the viewer itself
         if (!this.viewer) {
-            await initializeViewerRuntime({ getAccessToken: this.getAccessToken.bind(this) });
+            await initializeViewerRuntime({
+                getAccessToken: async (callback: (access_token: string, expires_in: number) => void) => {
+                    try {
+                        const share = await getShare(this.shareUrl);
+                        const { access_token, expires_in } = share.credentials;
+                        callback(access_token, expires_in);
+                    } catch (err) {
+                        alert('Could not retrieve access token for the viewer. See console for more details.');
+                        console.error(err);
+                    }
+                }
+            });
             this.viewer = new Autodesk.Viewing.GuiViewer3D(this.container);
             this.viewer.start();
-        } else {
-            for (const model of this.viewer.getAllModels()) {
-                this.viewer.unloadModel(model);
-            }
+            this.viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, async (ev) => {
+                this.externalIdsMap = await getExternalIdMap(ev.model);
+            });
         }
+
+        // Unload any previously loaded models
+        if (this.model) {
+            this.viewer.unloadModel(this.model);
+            this.model = null;
+            this.externalIdsMap = null;
+        }
+
+        // Load a model from the new share URL
         try {
             const share = await getShare(this.shareUrl);
             (Autodesk.Viewing as any).refreshToken(share.credentials.access_token);
-            await loadModel(this.viewer, share.urn);
+            this.model = await loadModel(this.viewer, share.urn);
         } catch (err) {
             alert('Could not load model in the viewer. See console for more details.');
-            console.error(err);
-        }
-    }
-
-    private async getAccessToken(callback: (access_token: string, expires_in: number) => void): Promise<void> {
-        try {
-            const share = await getShare(this.shareUrl);
-            const { access_token, expires_in } = share.credentials;
-            callback(access_token, expires_in);
-        } catch (err) {
-            alert('Could not retrieve access token for the viewer. See console for more details.');
             console.error(err);
         }
     }
