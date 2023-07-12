@@ -13,20 +13,31 @@ import { VisualFormattingSettingsModel } from './settings';
 import { initializeViewerRuntime, loadModel, getExternalIdMap } from './viewer.utils';
 import { getShare } from './shares.utils';
 
+/**
+ * Custom visual wrapper for the Autodesk Platform Services Viewer.
+ */
 export class Visual implements IVisual {
     private container: HTMLElement;
-    private viewer: Autodesk.Viewing.GuiViewer3D = null;
-    private model: Autodesk.Viewing.Model = null;
-    private externalIdsMap: { [externalId: string]: number } = null;
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
     private shareUrl: string = '';
+    private viewer: Autodesk.Viewing.GuiViewer3D = null;
+    private model: Autodesk.Viewing.Model = null;
+    private externalIdsMap: { [externalId: string]: number } = null;
 
+    /**
+     * Initializes the viewer visual.
+     * @param options Additional visual initialization options.
+     */
     constructor(options: VisualConstructorOptions) {
         this.formattingSettingsService = new FormattingSettingsService();
         this.container = options.element;
     }
 
+    /**
+     * Notifies the viewer visual of an update (data, viewmode, size change).
+     * @param options Additional visual update options.
+     */
     public async update(options: VisualUpdateOptions) {
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
         if (this.formattingSettings.card.shareUrl.value !== this.shareUrl) {
@@ -42,6 +53,14 @@ export class Visual implements IVisual {
                 this.viewer.fitToView(dbids);
             }
         }
+    }
+
+    /**
+     * Returns properties pane formatting model content hierarchies, properties and latest formatting values, Then populate properties pane.
+     * This method is called once every time we open properties pane or when the user edit any format property. 
+     */
+    public getFormattingModel(): powerbi.visuals.FormattingModel {
+        return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
     private async updateViewer(): Promise<void> {
@@ -82,13 +101,5 @@ export class Visual implements IVisual {
             alert('Could not load model in the viewer. See console for more details.');
             console.error(err);
         }
-    }
-
-    /**
-     * Returns properties pane formatting model content hierarchies, properties and latest formatting values, Then populate properties pane.
-     * This method is called once every time we open properties pane or when the user edit any format property. 
-     */
-    public getFormattingModel(): powerbi.visuals.FormattingModel {
-        return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 }
