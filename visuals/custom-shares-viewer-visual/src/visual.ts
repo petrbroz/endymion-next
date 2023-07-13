@@ -7,19 +7,25 @@ import './../style/visual.less';
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
+import DataView = powerbi.DataView;
 
 import { VisualFormattingSettingsModel } from './settings';
 
-import { initializeViewerRuntime, loadModel, getExternalIdMap } from './viewer.utils';
+import { initializeViewerRuntime, loadModel, getVisibleNodes, getExternalIdMap, getExternalIds } from './viewer.utils';
 import { getShare } from './shares.utils';
 
 /**
  * Custom visual wrapper for the Autodesk Platform Services Viewer.
  */
 export class Visual implements IVisual {
+    private host: IVisualHost;
     private container: HTMLElement;
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
+    private currentDataView: DataView = null;
+    private selectionManager: ISelectionManager = null;
     private shareUrl: string = '';
     private viewer: Autodesk.Viewing.GuiViewer3D = null;
     private model: Autodesk.Viewing.Model = null;
@@ -30,6 +36,8 @@ export class Visual implements IVisual {
      * @param options Additional visual initialization options.
      */
     constructor(options: VisualConstructorOptions) {
+        this.host = options.host;
+        this.selectionManager = options.host.createSelectionManager();
         this.formattingSettingsService = new FormattingSettingsService();
         this.container = options.element;
     }
@@ -44,12 +52,15 @@ export class Visual implements IVisual {
             this.shareUrl = this.formattingSettings.card.shareUrl.value;
             this.updateViewer();
         }
-        if (this.viewer && this.externalIdsMap && options.dataViews.length > 0) {
-            const externalIds = options.dataViews[0]?.table?.rows;
+        if (options.dataViews.length > 0) {
+            this.currentDataView = options.dataViews[0];
+        }
+        if (this.viewer && this.externalIdsMap && this.currentDataView) {
+            const externalIds = this.currentDataView.table?.rows;
             if (externalIds?.length > 0) {
                 //@ts-ignore
                 const dbids = externalIds.map(e => this.externalIdsMap[e[0]]);
-                this.viewer.isolate(dbids);
+                this.viewer.select(dbids);
                 this.viewer.fitToView(dbids);
             }
         }
@@ -80,9 +91,8 @@ export class Visual implements IVisual {
             });
             this.viewer = new Autodesk.Viewing.GuiViewer3D(this.container);
             this.viewer.start();
-            this.viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, async (ev) => {
-                this.externalIdsMap = await getExternalIdMap(ev.model);
-            });
+            this.viewer.addEventListener(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, this.onPropertiesLoaded.bind(this));
+            this.viewer.addEventListener(Autodesk.Viewing.ISOLATE_EVENT, this.onIsolationChanged.bind(this));
         }
 
         // Unload any previously loaded models
@@ -101,5 +111,29 @@ export class Visual implements IVisual {
             alert('Could not load model in the viewer. See console for more details.');
             console.error(err);
         }
+    }
+
+    private async onPropertiesLoaded() {
+        this.externalIdsMap = await getExternalIdMap(this.model);
+    }
+
+    private async onIsolationChanged() {
+        const allExternalIds = this.currentDataView?.table?.rows;
+        if (!allExternalIds) {
+            return;
+        }
+        const visibleNodeIds = getVisibleNodes(this.model);
+        const selectedExternalIds = await getExternalIds(this.model, visibleNodeIds);
+        const selectionIds: powerbi.extensibility.ISelectionId[] = [];
+        for (const selectedExternalId of selectedExternalIds) {
+            const rowIndex = allExternalIds.findIndex(row => row[0] === selectedExternalId);
+            if (rowIndex !== -1) {
+                const selectionId = this.host.createSelectionIdBuilder()
+                    .withTable(this.currentDataView.table, rowIndex)
+                    .createSelectionId();
+                selectionIds.push(selectionId);
+            }
+        }
+        this.selectionManager.select(selectionIds);
     }
 }

@@ -34,9 +34,28 @@ export function loadModel(viewer: Autodesk.Viewing.Viewer3D, urn: string, guid?:
     });
 }
 
+export function getVisibleNodes(model: Autodesk.Viewing.Model): number[] {
+    const tree = model.getInstanceTree();
+    const dbids: number[] = [];
+    tree.enumNodeChildren(tree.getRootId(), dbid => {
+        if (tree.getChildCount(dbid) === 0 && !tree.isNodeHidden(dbid) && !tree.isNodeOff(dbid)) {
+            dbids.push(dbid);
+        }
+    }, true);
+    return dbids;
+}
+
 export function getExternalIdMap(model: Autodesk.Viewing.Model): Promise<{ [externalId: string]: number; }> {
     return new Promise(function (resolve, reject) {
         model.getExternalIdMapping(resolve, reject);
+    });
+}
+
+export function getExternalIds(model: Autodesk.Viewing.Model, dbids: number[]): Promise<string[]> {
+    return new Promise(function (resolve, reject) {
+        model.getBulkProperties(dbids, { propFilter: ['externalId'] }, results => {
+            resolve(results.map(result => result.externalId))
+        }, reject);
     });
 }
 
