@@ -47,6 +47,7 @@ export class Visual implements IVisual {
      * @param options Additional visual update options.
      */
     public async update(options: VisualUpdateOptions) {
+        this.logUpdateOptions(options);
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
         if (this.formattingSettings.card.shareUrl.value !== this.shareUrl) {
             this.shareUrl = this.formattingSettings.card.shareUrl.value;
@@ -72,6 +73,35 @@ export class Visual implements IVisual {
      */
     public getFormattingModel(): powerbi.visuals.FormattingModel {
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
+    }
+
+    private logUpdateOptions(options: VisualUpdateOptions): void {
+        const VisualUpdateTypes = {
+            [powerbi.VisualUpdateType.All]: 'All',
+            [powerbi.VisualUpdateType.Resize]: 'Resize',
+            [powerbi.VisualUpdateType.ResizeEnd]: 'ResizeEnd',
+            [powerbi.VisualUpdateType.Data]: 'Data',
+            [powerbi.VisualUpdateType.Style]: 'Style',
+            [powerbi.VisualUpdateType.ViewMode]: 'ViewMode'
+        };
+        const ViewModes = {
+            [powerbi.ViewMode.Edit]: 'Edit',
+            [powerbi.ViewMode.InFocusEdit]: 'InFocusEdit',
+            [powerbi.ViewMode.View]: 'View'
+        };
+        const EditModes = {
+            [powerbi.EditMode.Default]: 'Default',
+            [powerbi.EditMode.Advanced]: 'Advanced'
+        };
+        const VisualDataChangeOperationKinds = {
+            [powerbi.VisualDataChangeOperationKind.Create]: 'Create',
+            [powerbi.VisualDataChangeOperationKind.Segment]: 'Segment'
+        };
+        console.info(
+            'VisualUpdateType:', VisualUpdateTypes[options.type],
+            'ViewMode:', ViewModes[options.viewMode],
+            'EditMode:', EditModes[options.editMode],
+            'VisualDataChangeOperationKind', VisualDataChangeOperationKinds[options.operationKind]);
     }
 
     private async updateViewer(): Promise<void> {
