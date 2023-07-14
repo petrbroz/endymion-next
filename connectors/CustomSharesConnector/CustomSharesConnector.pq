@@ -6,11 +6,9 @@ shared CustomSharesConnector.Contents = (shareUrl as text) =>
     let
         share = CustomSharesConnector.GetShare(shareUrl),
         urn = share[URN],
-        accessToken = share[AccessToken],
+        guid = share[GUID],
         region = share[Region],
-        views = CustomSharesConnector.GetViews(urn, region, accessToken),
-        firstView = List.First(views),
-        guid = firstView[guid],
+        accessToken = share[AccessToken],
         tree = CustomSharesConnector.GetTree(urn, guid, region, accessToken),
         FlattenTreeNodeRecursive = (node as record, hierarchy as list) =>
             if Record.HasFields(node, "objects")
@@ -49,15 +47,23 @@ CustomSharesConnector.GetShare = (shareUrl as text) =>
             ]
         ]),
         json = Json.Document(response),
-        urn = json[urn],
-        region = try json[region] otherwise "US",
         credentials = json[credentials],
-        access_token = credentials[access_token]
+        accessToken = credentials[access_token],
+        urn = json[urn],
+        region = Record.FieldOrDefault(json, "region", "US"),
+        guid = Record.FieldOrDefault(json, "guid",
+            let
+                views = CustomSharesConnector.GetViews(urn, region, accessToken),
+                firstView = List.First(views)
+            in
+                firstView[guid]
+        )
     in
         [
-            AccessToken = access_token,
             URN = urn,
-            Region = region
+            GUID = guid,
+            Region = region,
+            AccessToken = accessToken
         ];
 
 CustomSharesConnector.GetViews = (urn as text, region as text, accessToken as text) =>
