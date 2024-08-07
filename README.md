@@ -1,4 +1,7 @@
-# endymion-next
+> [!IMPORTANT]
+> The official Power BI components for Autodesk Platform Services are available in https://github.com/autodesk-platform-services/aps-powerbi-tools.
+
+# endymion-next (deprecated)
 
 Experimental remake of https://aps.autodesk.com/en/docs/endymion/v1/developers_guide/overview, allowing developers to build [PowerBI](https://powerbi.com) reports incorporating design data - visuals as well as metadata - from [Autodesk Platform Services](https://aps.autodesk.com).
 
